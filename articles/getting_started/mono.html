@@ -1,0 +1,177 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Halp! I tried hard drugs Mono and my bot crashes on start! </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Halp! I tried hard drugs Mono and my bot crashes on start! ">
+    <meta name="generator" content="docfx 2.40.12.0">
+    
+    <link rel="shortcut icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    <meta property="docfx:rel" content="../../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="halp-i-tried-hard-drugs-mono-and-my-bot-crashes-on-start">Halp! I tried <del>hard drugs</del> Mono and my bot crashes on start!</h1>
+
+<p>Mono is an open-source implementation of the .NET Framework for non-Windows operating systems. However, it has a large 
+number of flaws, some of which break support for DSharpPlus without extra effort. It is generally recommended you stay 
+away from it.</p>
+<h2 id="but-i-cannot-use-windows-what-do">But I cannot use Windows! What do?</h2>
+<p>A cross-platform alternative, that works on Windows, GNU/Linux, and OS X, is .NET Core. It&#39;s lighter, faster, and free 
+of Mono&#39;s problems.</p>
+<p>Compared to Mono, you are not required to use 3rd party WebSocket client implementations, nor does it require any 
+changes to existing .NET Core projects. Porting from .NETFX is not hard, although generally requires that you start a 
+new project, and copy all existing code over. Then you will need to fix all the build errors, usually with help of 
+Google.</p>
+<p>This might sound scary at first, but it has huge long-term gains, not the least of which is better performance, less 
+resources used, and better portability.</p>
+<h2 id="i-must-absolutely-use-mono">I must absolutely use Mono!</h2>
+<p>If you insist on using a broken runtime, I cannot stop you, however with most problems, you will be on your own. Before 
+you begin, you will need to perform some setup steps on the target system, as well as make some changes to your 
+application. Note that due to the nature of these changes, your application might be compromised through a 
+man-in-the-middle attacks much easier, as it&#39;s required you override certificate validation (as Mono lacks support for 
+modern certificate signatures).</p>
+<h3 id="install-certificates">Install certificates</h3>
+<p>Once you have Mono installed, you will need to populate its certificate cache. This is done by doing 
+<code>cert-sync --user /etc/ssl/certs/ca-certificates.crt</code>. Once this is done, you should see a bunch of certificates being 
+installed.</p>
+<h3 id="install-websocketsharp-client-implementation">Install WebSocketSharp client implementation</h3>
+<p>Mono lacks support for most of the HTTP-related code from .NETFX Base Class Library. Due to that, it is required that 
+you install an alternative WebSocket client implementation.</p>
+<p>To achieve that, follow the instructions outlined in the 
+<a href="/articles/getting_started/alternate_ws.html" title="Alternate WebSocket client implementations">Alternate WebSocket client implementations</a> 
+section of the guide.</p>
+<h3 id="place-validation-callback-override-in-your-code">Place validation callback override in your code</h3>
+<p>In your entry class, you will need to place the following method:</p>
+<pre><code class="lang-cs">private static bool ServerCertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+{
+    bool isOk = true;
+
+    if (sslPolicyErrors != SslPolicyErrors.None)
+    {
+        foreach (X509ChainStatus cs in chain.ChainStatus)
+        {
+            if (cs.Status != X509ChainStatusFlags.RevocationStatusUnknown)
+            {
+                chain.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
+                chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
+                chain.ChainPolicy.UrlRetrievalTimeout = new TimeSpan(0, 1, 0);
+                chain.ChainPolicy.VerificationFlags = X509VerificationFlags.AllFlags;
+                bool chainIsValid = chain.Build((X509Certificate2)certificate);
+                if (!chainIsValid)
+                {
+                    isOk = false;
+                }
+            }
+        }
+    }
+
+    return isOk;
+}
+</code></pre><p>Next up, in your entry point method, before anything else, you will need to place the following code:</p>
+<pre><code class="lang-cs">ServicePointManager.ServerCertificateValidationCallback = ServerCertificateValidationCallback;
+</code></pre><p>This will override all certificate validation callbacks. Be aware that this will drastically reduce the security of 
+your application&#39;s traffic.</p>
+<p>The above code is courtesy of Hawx#1545 (89600512793530368) from Discord API.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/uwx/DSharpPlus/blob/alias-test/docs/articles/getting_started/mono.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © 2017-2019 DSharpPlus development team
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

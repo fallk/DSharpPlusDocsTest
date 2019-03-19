@@ -1,0 +1,231 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Getting started with DSharpPlus - your first DSharpPlus bot </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Getting started with DSharpPlus - your first DSharpPlus bot ">
+    <meta name="generator" content="docfx 2.40.12.0">
+    
+    <link rel="shortcut icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    <meta property="docfx:rel" content="../../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="getting-started-with-dsharpplus---your-first-dsharpplus-bot">Getting started with DSharpPlus - your first DSharpPlus bot</h1>
+
+<p>You&#39;re still with me - good! You have created an application and a user for your bot. Now we will focus on bringing it to life.</p>
+<p>In order for that to happen, you need to make a program that connects to discord as your bot.</p>
+<p>This guide requires you to have solid basics in C#. Open your IDE. If you don&#39;t have one installed, I recommend installing 
+one of the following:</p>
+<ul>
+<li><a href="https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=Community&amp;rel=15" title="Visual Studio 2017 Community">Visual Studio 2017 Community</a></li>
+<li><a href="https://code.visualstudio.com/download" title="Visual Studio Code">Visual Studio Code</a></li>
+</ul>
+<p>When installing Visual Studio 2017, make sure you select the <strong>.NET Core cross-platform development</strong> option.</p>
+<p><img src="/images/02_01_vs_netcore.png" alt=".NET Core in Visual Studio 2017" title=".NET Core in Visual Studio 2017"></p>
+<p>This tutorial will be presented using Visual Studio 2017, however the instructions should still apply to VS Code and other .NET 
+IDEs (so long as they support .NET Core).</p>
+<h2 id="note-for-windows-7-users">Note for Windows 7 users</h2>
+<p>If you&#39;re using Windows 7, create a regular .NET Framework project (it&#39;s required you target at least .NET 4.5; we recommend 
+4.7).</p>
+<p>Make sure you read the article about <a href="/articles/getting_started/alternate_ws.html">Alternate WebSocket Client Implementations</a>.</p>
+<h2 id="1-creating-your-project">1. Creating your project</h2>
+<p>To start, you need to create a new project. Click the <strong>Create new project...</strong> button, and select <strong>Console App (.NET Core)</strong> 
+as your project template. Give it some name, in here it&#39;s <strong>MyFirstBot</strong>.</p>
+<p><img src="/images/02_02_new_project.png" alt="Step 1" title="New project"></p>
+<p><img src="/images/02_03_new_project_settings.png" alt="Step 2" title=".NET Core App"></p>
+<h2 id="2-adding-the-nuget-package">2. Adding the NuGet package</h2>
+<p>Once you create your project, you will be presented with a blank project template, that only prints Hello World! to the console. 
+Before you embark on your journey, you need to add DSharpPlus package reference. Locate the Solution Explorer on the right 
+side of the screen. </p>
+<p><img src="/images/02_04_solution_explorer.png" alt="Step 3" title="Finding the solution explorer"></p>
+<p>Right-click the project (as highlighted on the above picture), and select <strong>Manage NuGet Packages...</strong>.</p>
+<p><img src="/images/02_05_manage_packages.png" alt="Step 4" title="Manage Packages"></p>
+<p>NuGet package manager tab will open. In it, press <strong>Browse</strong>, and in the <strong>Search</strong> field, type <code>DSharpPlus</code>.</p>
+<p><img src="/images/02_06_nuget.png" alt="Step 5" title="NuGet interface"></p>
+<p>Once this is done, select the <strong>DSharpPlus</strong> package, and on the right pane ensure that version selected is <strong>Latest stable</strong>, 
+then press <strong>Install</strong>.</p>
+<p><img src="/images/02_07_installing.png" alt="Step 6" title="Installing the DSharpPlus package"></p>
+<h2 id="3-making-your-first-bot">3. Making your first bot</h2>
+<p>Now that your project has the required DSharpPlus components, let&#39;s move on to actually making the bot.</p>
+<p>The first thing you will want to do is adding a using section for the library&#39;s components in the code. You can do that 
+by adding <code>using DSharpPlus;</code> under <code>using System;</code>. Once that is done, locate the <code>Main</code> method, and delete all of its 
+contents. Create a new method below it, with the following signature:</p>
+<pre><code class="lang-cs">static async Task MainAsync(string[] args)
+{
+
+}
+</code></pre><p>Visual Studio will complain. Hover over <code>Task</code>, and apply the recommended solution. It should add 
+<code>using System.Threading.Tasks;</code> to your usings section.</p>
+<p>Then, go back to <code>Main</code>, and place the following code in it: <code>MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();</code></p>
+<p>Now, above the <code>Main</code> method, create a static field for your Discord client: <code>static DiscordClient discord;</code>. This field will 
+hold your DiscordClient instance, which you will be using to interact with Discord API.</p>
+<p>Now go back inside <code>MainAsync</code> method. You need to initialize the client. Remeber that token I told you to take note of? 
+Copy it, you are about to use it.</p>
+<p>Initialize the Discord client: </p>
+<pre><code class="lang-cs">discord = new DiscordClient(new DiscordConfiguration
+{
+    Token = &quot;&lt;paste the token here&gt;&quot;,
+    TokenType = TokenType.Bot
+});
+</code></pre><p>You have initialized your client instance, but it does nothing yet. Let&#39;s make it listen for incoming messages, and respond 
+with &quot;pong&quot; to messages that start with &quot;ping&quot;. For that, you need to utilize the <a class="xref" href="../../api/DSharpPlus.DiscordClient.html#DSharpPlus_DiscordClient_MessageCreated">MessageCreated</a> event.
+of the client. Let&#39;s hook it then:</p>
+<pre><code class="lang-cs">discord.MessageCreated += async e =&gt;
+{
+    if (e.Message.Content.ToLower().StartsWith(&quot;ping&quot;))
+        await e.Message.RespondAsync(&quot;pong!&quot;);
+};
+</code></pre><p>Now, once the bot connects, it will respond with &quot;pong!&quot; to each message that starts with &quot;ping&quot;.</p>
+<p>But that will happen only once you connect, so how do you do that? You use the @DSharpPlus.DiscordClient.ConnectAsync method.
+of the client. You will need to <code>await</code> it, which is why you had to make an asynchronous <code>Main</code> method.</p>
+<pre><code class="lang-cs">await discord.ConnectAsync();
+</code></pre><p>This is not everything yet. If you start the bot now, it will just flash and quit. To prevent that, you need to add an 
+infinite wait at the end of your <code>MainAsync</code> method:</p>
+<pre><code class="lang-cs">await Task.Delay(-1);
+</code></pre><h2 id="4-putting-it-all-together">4. Putting it all together</h2>
+<p>Once you are done, your code will look more or less like this:</p>
+<pre><code class="lang-cs">using System;
+using System.Threading.Tasks;
+using DSharpPlus;
+
+namespace MyFirstBot
+{
+    class Program
+    {
+        static DiscordClient discord;
+
+        static void Main(string[] args)
+        {
+            MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+
+        static async Task MainAsync(string[] args)
+        {
+            discord = new DiscordClient(new DiscordConfiguration
+            {
+                Token = &quot;&lt;your token here&gt;&quot;,
+                TokenType = TokenType.Bot
+            });
+
+            discord.MessageCreated += async e =&gt;
+            {
+                if (e.Message.Content.ToLower().StartsWith(&quot;ping&quot;))
+                    await e.Message.RespondAsync(&quot;pong!&quot;);
+            };
+
+            await discord.ConnectAsync();
+            await Task.Delay(-1);
+        }
+    }
+}
+</code></pre><p>If this is the case, you are ready to move on.</p>
+<h2 id="5-testing">5. Testing</h2>
+<p>Hit F5. This will compile your code and run the project. If all went well, your bot should now be online and respond to 
+messages that start with ping.</p>
+<p>If you&#39;re a Windows 7 user, it won&#39;t work. Read the <a href="/articles/getting_started/alternate_ws.html">Alternate WebSocket Client Implementations</a> 
+on ways to fix the issue.</p>
+<p><img src="/images/02_08_alive.png" alt="Step 9"></p>
+<p>If it works, congratulations! You can now try some of the more advanced subjects from the list on the left.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/uwx/DSharpPlus/blob/alias-test/docs/articles/getting_started/basic_bot.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © 2017-2019 DSharpPlus development team
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

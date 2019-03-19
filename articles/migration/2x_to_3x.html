@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>I updated the library and now I'm drowning in red underline! </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="I updated the library and now I'm drowning in red underline! ">
+    <meta name="generator" content="docfx 2.40.12.0">
+    
+    <link rel="shortcut icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    <meta property="docfx:rel" content="../../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="i-updated-the-library-and-now-im-drowning-in-red-underline">I updated the library and now I&#39;m drowning in red underline!</h1>
+
+<p>3.0 was a major breaking change compared to 2.0. A lot has changed internally, and even more externally.</p>
+<p>Among the breaking changes there are:</p>
+<ul>
+<li>Most classes were organized into namespaces.</li>
+<li>Several classes and methods were renamed to maintain consistency with the rest of the library.</li>
+<li>All events were renamed to be in the past tense.</li>
+<li><a class="xref" href="../../api/DSharpPlus.Entities.DiscordEmbed.html">DiscordEmbed</a> instances are no longer constructed directly; instead, they are built via the brand-new 
+<a class="xref" href="../../api/DSharpPlus.Entities.DiscordEmbedBuilder.html">DiscordEmbedBuilder</a>.</li>
+<li>All colors are now passed as instances of <a class="xref" href="../../api/DSharpPlus.Entities.DiscordColor.html">DiscordColor</a>.</li>
+<li>Concept of default channel has been removed as it no longer exists; this means that you can no longer create invites to 
+guilds directly.</li>
+<li>Modules are now based on an abstract class rather than an interface.</li>
+<li>A brand-new ratelimit handler was implemented.</li>
+</ul>
+<p>The list of changes goes on, but the above are what affects the consumers of the library. Some of them require major changes to 
+your code.</p>
+<h2 id="fixing-namespace-issues">Fixing namespace issues.</h2>
+<p>One of the fastest fixes is adding missing <code>using</code> instructions to your code. For entities such as <code>DiscordUser</code>, 
+<code>DiscordChannel</code>, etc. this requires adding <code>DSharpPlus.Entities</code> namespace. Exceptions lie in <code>DSharpPlus.Exceptions</code>, event 
+arg classes can be found in <code>DSharpPlus.EventArgs</code>, and network components are in <code>DSharpPlus.Net</code>.</p>
+<h2 id="major-renames">Major renames</h2>
+<p>Several classes and methods were renamed to fit the current naming scheme in the library. Most notable ones are:</p>
+<ul>
+<li><code>DiscordConfig</code> -&gt; <code>DiscordConfiguration</code></li>
+<li><code>CommandExecutedEventArgs</code> -&gt; <code>CommandExecutionEventArgs</code></li>
+<li><code>SnowflakeObject.CreationDate</code> -&gt; <code>SnowflakeObject.CreationTimestamp</code></li>
+<li><code>VoiceReceivedEventArgs</code> -&gt; <code>VoiceReceiveEventArgs</code></li>
+<li><code>DiscordMessage.EditAsync()</code> -&gt; <code>DiscordMessage.ModifyAsync()</code></li>
+<li><code>SocketDisconnectEventArgs</code> -&gt; <code>SocketCloseEventArgs</code></li>
+<li><code>DiscordMember.TakeRoleAsync()</code> -&gt; <code>DiscordMember.RevokeRoleAsync()</code></li>
+<li><code>MessageReactionRemoveAllEventArgs</code> -&gt; <code>MessageReactionsClearEventArgs</code></li>
+</ul>
+<h2 id="event-renames">Event renames</h2>
+<p>All events received a rename to maintain consistent naming across the library. If your event shows up as not found, try adding 
+<code>d</code> or <code>ed</code> to the end of its name.</p>
+<h2 id="embed-woes">Embed woes</h2>
+<p>Embeds can no longer be constructed or modified directly. Instead, you have to use the embed builder. For the most part, this 
+can be achieved using Find/Replace and doing <code>new DiscordEmbed</code> -&gt; <code>new DiscordEmbedBuilder</code>.</p>
+<p>On top of that, to add fields to an embed, you no longer create a new list for fields and assign it to <code>Fields</code>, but instead 
+you use the <code>.AddField()</code> method on the builder.</p>
+<p>To modify an existing embed, pass said embed to builder&#39;s constructor. The builder will use it as a prototype.</p>
+<h2 id="color-changes">Color changes</h2>
+<p>This one is easy to fix for the most part. For situation where you were doing e.g. <code>Color = 0xC0FFEE</code>, you now do 
+<code>Color = new DiscordColor(0xC0FFEE)</code>. This has the added advantage of letting you create a color from 3 RGB values or parse 
+an RGB string.</p>
+<h2 id="default-channel-removal">Default channel removal</h2>
+<p><code>DefaultChannel</code> no longer exists on guilds, and, as such, <code>DiscordGuild.CreateInviteAsync()</code> is also gone, as it relied on 
+that property.</p>
+<p>The new concept of &quot;default&quot; channel is a fallback, and is basically top channel the user can see. In the library this is 
+facilitated via <code>DiscordGuild.GetDefaultChannel()</code>.</p>
+<h2 id="module-changes">Module changes</h2>
+<p>The <code>IModule</code> interface was removed, and replaced with <code>BaseModule</code> class. The most notable change is that your module should 
+no longer define the field which holds your instance of <code>DiscordClient</code>, as that&#39;s on the base class itself. On top of that, 
+you need to change modifiers of <code>.Setup()</code> from <code>public</code> to <code>protected internal override</code>.</p>
+<h2 id="new-ratelimit-handler">New ratelimit handler</h2>
+<p>This does not actually cause any in-code changes, however the behavior of the REST client and the way requests are handled 
+changes drastically.</p>
+<p>The new handler is thread-safe, and uses queueing to handle REST requests, and should bucket requests properly now.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/uwx/DSharpPlus/blob/alias-test/docs/articles/migration/2x_to_3x.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © 2017-2019 DSharpPlus development team
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

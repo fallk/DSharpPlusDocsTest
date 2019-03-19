@@ -1,0 +1,236 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Wiretapping for dummies - receiving and saving voice data </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Wiretapping for dummies - receiving and saving voice data ">
+    <meta name="generator" content="docfx 2.40.12.0">
+    
+    <link rel="shortcut icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    <meta property="docfx:rel" content="../../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="wiretapping-for-dummies---receiving-and-saving-voice-data">Wiretapping for dummies - receiving and saving voice data</h1>
+
+<p>So you want your bot to listen to what others say, and then maybe do something with that.</p>
+<p>DSharpPlus supports incoming voice, and, much like with outgoing voice, the data you get is raw PCM data.</p>
+<h2 id="1-setting-it-up">1. Setting it up</h2>
+<p>You can get rid of the <code>play</code> command from the previous example. Other than that, you need to enable incoming voice in your 
+voice client configuration. Replace the line where you enable voice with the following:</p>
+<pre><code class="lang-cs">voice = discord.UseVoiceNext(new VoiceNextConfiguration
+{
+    EnableIncoming = true
+});
+</code></pre><h2 id="2-hooking-it-up">2. Hooking it up</h2>
+<p>The first thing to do when you want to listen is hooking the appropriate events. <code>VoiceNextConnection</code> offers 2: 
+<a class="xref" href="../../api/DSharpPlus.VoiceNext.VoiceNextConnection.html#DSharpPlus_VoiceNext_VoiceNextConnection_UserSpeaking">UserSpeaking</a> and <a class="xref" href="../../api/DSharpPlus.VoiceNext.VoiceNextConnection.html#DSharpPlus_VoiceNext_VoiceNextConnection_VoiceReceived">VoiceReceived</a>.</p>
+<p>First, in your command module, you will want to create a non-command method for this handler:</p>
+<pre><code class="lang-cs">public async Task OnVoiceReceived(VoiceReceiveEventArgs ea)
+{
+
+}
+</code></pre><p>Visual Studio will complain about missing classes, add <code>using DSharpPlus.EventArgs;</code> to your usings section.</p>
+<p>Then, in your <code>join</code> command, you will want to attach it to an appropriate event, and in the <code>leave</code> command, you will 
+want to detach it.</p>
+<p>Next up, you want to add <code>using System.Collections.Concurrent</code> and <code>using System.Linq;</code> to your usings. You will also need to 
+create a dictionary for <code>source -&gt; stream</code> mapping if you want to separate the incoming voice: 
+<code>private ConcurrentDictionary&lt;uint, Process&gt; ffmpegs;</code>. Make sure you initialize it in your <code>join</code> command and null it in 
+<code>leave</code>. Additionally, before you null it, you will need to deinitialize all the ffmpeg instances there.</p>
+<p>Finally, in <code>OnVoiceReceived</code>, you need to do your processing logic. It will look more or less like this:</p>
+<ul>
+<li>Check if the source has an ffmpeg source.</li>
+<li>Create one if not. Use existing otherwise.</li>
+<li>Pipe the data to the instance.</li>
+</ul>
+<p>Once all this is done, the entire class should look more or less like this:</p>
+<pre><code class="lang-cs">using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.EventArgs;
+using DSharpPlus.VoiceNext;
+
+namespace MyFirstBot
+{
+    public class MyCommands
+    {
+        private ConcurrentDictionary&lt;uint, Process&gt; ffmpegs;
+
+        [Command(&quot;join&quot;)]
+        public async Task Join(CommandContext ctx)
+        {
+            var vnext = ctx.Client.GetVoiceNextClient();
+
+            var vnc = vnext.GetConnection(ctx.Guild);
+            if (vnc != null)
+                throw new InvalidOperationException(&quot;Already connected in this guild.&quot;);
+
+            var chn = ctx.Member?.VoiceState?.Channel;
+            if (chn == null)
+                throw new InvalidOperationException(&quot;You need to be in a voice channel.&quot;);
+
+            vnc = await vnext.ConnectAsync(chn);
+
+            this.ffmpegs = new ConcurrentDictionary&lt;uint, Process&gt;();
+            vnc.VoiceReceived += OnVoiceReceived;
+
+            await ctx.RespondAsync(&quot;👌&quot;);
+        }
+
+        [Command(&quot;leave&quot;)]
+        public async Task Leave(CommandContext ctx)
+        {
+            var vnext = ctx.Client.GetVoiceNextClient();
+
+            var vnc = vnext.GetConnection(ctx.Guild);
+            if (vnc == null)
+                throw new InvalidOperationException(&quot;Not connected in this guild.&quot;);
+
+            vnc.VoiceReceived -= OnVoiceReceived;
+            foreach (var kvp in this.ffmpegs)
+            {
+                await kvp.Value.StandardInput.BaseStream.FlushAsync();
+                kvp.Value.StandardInput.Dispose();
+                kvp.Value.WaitForExit();
+            }
+            this.ffmpegs = null;
+
+            vnc.Disconnect();
+
+            await ctx.RespondAsync(&quot;👌&quot;);
+        }
+
+        public async Task OnVoiceReceived(VoiceReceiveEventArgs ea)
+        {
+            if (!this.ffmpegs.ContainsKey(ea.SSRC))
+            {
+                var psi = new ProcessStartInfo
+                {
+                    FileName = &quot;ffmpeg&quot;,
+                    Arguments = $@&quot;-ac 2 -f s16le -ar 48000 -i pipe:0 -ac 2 -ar 44100 {ea.SSRC}.wav&quot;,
+                    RedirectStandardInput = true
+                };
+
+                this.ffmpegs.TryAdd(ea.SSRC, Process.Start(psi));
+            }
+
+            var buff = ea.Voice.ToArray();
+
+            var ffmpeg = this.ffmpegs[ea.SSRC];
+            await ffmpeg.StandardInput.BaseStream.WriteAsync(buff, 0, buff.Length);
+            await ffmpeg.StandardInput.BaseStream.FlushAsync();
+        }
+    }
+}
+</code></pre><p>If you run the bot, connect to a voice channel now, and start speaking, you will notice wav files popping up in the bot 
+project directory. If they are, congratulations, your bot is recording, and you are on a list somewhere!</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/uwx/DSharpPlus/blob/alias-test/docs/articles/voice/receive.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © 2017-2019 DSharpPlus development team
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

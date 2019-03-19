@@ -1,0 +1,242 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Your first digital broadcast - introduction to VoiceNext </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Your first digital broadcast - introduction to VoiceNext ">
+    <meta name="generator" content="docfx 2.40.12.0">
+    
+    <link rel="shortcut icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    <meta property="docfx:rel" content="../../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="your-first-digital-broadcast---introduction-to-voicenext">Your first digital broadcast - introduction to VoiceNext</h1>
+
+<p>So you just dropped your new mixtape and it&#39;s absolute fire. Wouldn&#39;t it be nice to let your friends listen?</p>
+<p>Audio in Discord is a fairly complicated subject, but thankfully, DSharpPlus makes it easy.</p>
+<h2 id="1-installing-voicenext">1. Installing VoiceNext</h2>
+<p>Using the procedures in the first bot article, install a NuGet package called <code>DSharpPlus.VoiceNext</code>.</p>
+<p>Now you need to enable VoiceNext module on your DiscordClient. Add a new field to your bot&#39;s <code>Program</code> class: 
+<code>static VoiceNextClient voice;</code></p>
+<p>Visual Studio will complain, you also need to add <code>using DSharpPlus.VoiceNext;</code> to your usings in both the command module 
+and the bot class.</p>
+<p>Before you connect, enable the module on your client: </p>
+<pre><code class="lang-cs">voice = discord.UseVoiceNext();
+</code></pre><p>This will enable the module.</p>
+<p>If you still have your command module, go to it, remove all the commands from previous examples, and add 
+<code>using DSharpPlus.VoiceNext;</code> to the usings section.</p>
+<p>In your bot class, add <code>EnableDms = false</code> to your command config.</p>
+<p>Remember to follow the setup guide. Make sure you have the required native components and ffmpeg in appropriate directory.</p>
+<h2 id="2-connecting-and-disconnecting">2. Connecting and disconnecting</h2>
+<p>Before the bot can play audio, it needs to connect to a voice channel. The most intuitive way to achieve this is by connecting 
+to the same channel as the user who invokes the command.</p>
+<p>Create a new command, call it <code>join</code>. In it, you will want to do the following:</p>
+<ul>
+<li>Get the VoiceNext client.</li>
+<li>Check if the bot isn&#39;t connected already.</li>
+<li>Fail if so.</li>
+<li>Check if the user is in a voice channel.</li>
+<li>Fail if not.</li>
+<li>Connect to voice.</li>
+<li>Let the user know it all went well.</li>
+</ul>
+<p>You also need a way to disconnect from voice. Create a command called <code>leave</code>, and make it do the following:</p>
+<ul>
+<li>Get the VoiceNext client.</li>
+<li>Check if the bot is connected.</li>
+<li>Fail if not.</li>
+<li>Disconnect.</li>
+<li>Let the user know it all went well.</li>
+</ul>
+<p>I encourage you to try and solve both of these issues yourself, however if you get stuck, here&#39;s some reference:</p>
+<pre><code class="lang-cs">[Command(&quot;join&quot;)]
+public async Task Join(CommandContext ctx)
+{
+    var chn = ctx.Member?.VoiceState?.Channel;
+    if (chn == null)
+        throw new InvalidOperationException(&quot;You need to be in a voice channel.&quot;);
+
+    vnc = await chn.ConnectAsync();
+    await ctx.RespondAsync(&quot;👌&quot;);
+}
+
+[Command(&quot;leave&quot;)]
+public async Task Leave(CommandContext ctx)
+{
+    var vnext = ctx.Client.GetVoiceNextClient();
+
+    var vnc = vnext.GetConnection(ctx.Guild);
+    if (vnc == null)
+        throw new InvalidOperationException(&quot;Not connected in this guild.&quot;);
+
+    vnc.Disconnect();
+    await ctx.RespondAsync(&quot;👌&quot;);
+}
+</code></pre><p>If you run your bot now, join a voice channel, and call <code>;;join</code>, the bot should join the voice channel. Conversely, invoking 
+<code>;;leave</code> will make the bot disconnect.</p>
+<p><img src="/images/06_01_voice_join.png" alt="Joining" title="Joining voice"></p>
+<p><img src="/images/06_02_voice_leave.png" alt="Leaving" title="Leaving voice"></p>
+<h2 id="3-broadcasting">3. Broadcasting</h2>
+<p>Your bot can now connect and disconnect, however it still cannot do the most important thing - broadcast audio.</p>
+<p>Let&#39;s change that. Create a new command called <code>play</code>. Give it a string argument called <code>file</code>, and mark it with 
+<a class="xref" href="../../api/DSharpPlus.CommandsNext.Attributes.RemainingTextAttribute.html">RemainingText attribute</a>. It will make that 
+argument capture all the text after the command&#39;s name.</p>
+<p>What you want to do right now, is something along these lines:</p>
+<ul>
+<li>Get the VoiceNext client.</li>
+<li>Check if the bot is connected.</li>
+<li>Fail if not.</li>
+<li>Check if the specified file exists.</li>
+<li>Fail if not.</li>
+</ul>
+<p>After that, add <code>using System.IO;</code> and <code>using System.Diagnostics;</code> to your usings. This is where things get really fun.</p>
+<p>You cannot send audio encoded with anything but Opus to Discord, and to encode audio to Opus, you need to get it in raw PCM 
+form. This is where ffmpeg comes in. It can transcode to and from various audio and video formats, including PCM.</p>
+<p>In order to get audio that we can use with Discord, you will need to spawn an ffmpeg instance, feed it your file, and grab 
+the PCM data from its output stream.</p>
+<p>Then you will be copying from that stream to Discord, one sample at a time. The whole command should look more or less like 
+this: </p>
+<pre><code class="lang-cs">[Command(&quot;play&quot;)]
+public async Task Play(CommandContext ctx, [RemainingText] string file)
+{
+    var vnext = ctx.Client.GetVoiceNextClient();
+
+    var vnc = vnext.GetConnection(ctx.Guild);
+    if (vnc == null)
+        throw new InvalidOperationException(&quot;Not connected in this guild.&quot;);
+
+    if (!File.Exists(file))
+        throw new FileNotFoundException(&quot;File was not found.&quot;);
+
+    await ctx.RespondAsync(&quot;👌&quot;);
+    await vnc.SendSpeakingAsync(true); // send a speaking indicator
+
+    var psi = new ProcessStartInfo
+    {
+        FileName = &quot;ffmpeg&quot;,
+        Arguments = $@&quot;-i &quot;&quot;{file}&quot;&quot; -ac 2 -f s16le -ar 48000 pipe:1&quot;,
+        RedirectStandardOutput = true,
+        UseShellExecute = false
+    };
+    var ffmpeg = Process.Start(psi);
+    var ffout = ffmpeg.StandardOutput.BaseStream;
+
+    var buff = new byte[3840];
+    var br = 0;
+    while ((br = ffout.Read(buff, 0, buff.Length)) &gt; 0)
+    {
+        if (br &lt; buff.Length) // not a full sample, mute the rest
+            for (var i = br; i &lt; buff.Length; i++)
+                buff[i] = 0;
+
+        await vnc.SendAsync(buff, 20);
+    }
+
+    await vnc.SendSpeakingAsync(false); // we&#39;re not speaking anymore
+}
+</code></pre><p>If you did everything right, your bot should now be playing music. If it is, congratulations.</p>
+<p><img src="/images/06_03_voice_play.png" alt="Playing" title="Playing audio"></p>
+<p><img src="/images/06_04_voice_console.png" alt="Console" title="Playing audio - console"></p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/uwx/DSharpPlus/blob/alias-test/docs/articles/voice/send.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © 2017-2019 DSharpPlus development team
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

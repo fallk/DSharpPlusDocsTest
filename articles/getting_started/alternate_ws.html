@@ -1,0 +1,178 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Alternative WebSocket client implementations </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Alternative WebSocket client implementations ">
+    <meta name="generator" content="docfx 2.40.12.0">
+    
+    <link rel="shortcut icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    <meta property="docfx:rel" content="../../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="alternative-websocket-client-implementations">Alternative WebSocket client implementations</h1>
+
+<p>For operating systems and runtimes that do not support the native .NET WebSocket implementation, such as Windows 7 or Mono, 
+you need to use an alternative WebSocket client implementation.</p>
+<h2 id="available-implementations">Available implementations</h2>
+<p>Currently, there are 3 implementations available on NuGet:</p>
+<ul>
+<li><code>DSharpPlus.WebSocket.WebSocket4Net</code>: This implementation is recommended if you&#39;re targeting .NET Framework 4.5+, and using 
+ Windows 7 or Mono 4.4.2. </li>
+<li><code>DSharpPlus.WebSocket.WebSocket4NetCore</code>: This updated version of WebSocket.WebSocket4Net is recommended if you&#39;re targeting
+<a href="https://github.com/dotnet/core">.NET Core</a> on Windows 7, and solely that platform.</li>
+<li><code>DSharpPlus.WebSocket.WebSocketSharp</code>: This implementation is recommended if you&#39;re targeting .NET Framework 4.5+, and using 
+Mono version higher than 4.4. This implementation will also work on Windows 7, however there are known issues with it and 
+the library.</li>
+</ul>
+<h2 id="making-your-own-implementation">Making your own implementation</h2>
+<p>If none of these fit your criteria, you can make your own implementation, using the existing ones as a template:</p>
+<ul>
+<li><a href="https://github.com/NaamloosDT/DSharpPlus/blob/master/DSharpPlus.WebSocket.WebSocket4Net/WebSocket4NetClient.cs" title="WebSocket4Net Client">Source for WS4Net client implementation</a></li>
+<li><a href="https://github.com/NaamloosDT/DSharpPlus/blob/master/DSharpPlus.WebSocket.WebSocket4NetCore/WebSocket4NetCoreClient.cs" title="WebSocket4NetCore Client">Source for WS4NetCore client implementation</a></li>
+<li><a href="https://github.com/NaamloosDT/DSharpPlus/blob/master/DSharpPlus.WebSocket.WebSocketSharp/WebSocketSharpClient.cs" title="WebSocketSharp Client">Source for WS# client implementation</a></li>
+</ul>
+<h2 id="using-alternative-websocket-client-implementations">Using alternative WebSocket client implementations</h2>
+<p>First, you need to install the desired WebSocket client implementation. If you&#39;re installing from NuGet, the procedure is the 
+same as for all other DSharpPlus packages.</p>
+<p>Then you need to indicate that DSharpPlus should use that specific WebSocket implementation. This is done by setting an 
+appropriate factory method in <a class="xref" href="../../api/DSharpPlus.DiscordConfiguration.html#DSharpPlus_DiscordConfiguration_WebSocketClientFactory">WebSocketClientFactory</a> property in your <a class="xref" href="../../api/DSharpPlus.DiscordConfiguration.html">DiscordConfiguration</a> instance.</p>
+<p>The factory methods are static methods, that return an instance of <a class="xref" href="../../api/DSharpPlus.Net.WebSocket.BaseWebSocketClient.html">BaseWebSocketClient</a>, and take a <code>System.Net.IWebProxy</code> 
+as an argument. For provided implementations, they are called <code>CreateNew</code>, and are available on the implementation classes:</p>
+<ul>
+<li>WebSocket4Net: <a class="xref" href="../../api/DSharpPlus.Net.WebSocket.WebSocket4NetClient.html#DSharpPlus_Net_WebSocket_WebSocket4NetClient_CreateNew_IWebProxy_">CreateNew(IWebProxy)</a></li>
+<li>WebSocket4NetCore: <a class="xref" href="../../api/DSharpPlus.Net.WebSocket.WebSocket4NetCoreClient.html#DSharpPlus_Net_WebSocket_WebSocket4NetCoreClient_CreateNew_IWebProxy_">CreateNew(IWebProxy)</a></li>
+<li>WebSocketSharp: <a class="xref" href="../../api/DSharpPlus.Net.WebSocket.WebSocketSharpClient.html#DSharpPlus_Net_WebSocket_WebSocketSharpClient_CreateNew_IWebProxy_">CreateNew(IWebProxy)</a></li>
+</ul>
+<p>In order to use a specific implementation, you pass selected factory method to the aformentioned <code>WebSocketClientFactory</code> property.</p>
+<p>For example, for WS4Net client, you need to set it like this:</p>
+<pre><code class="lang-cs">var config = new DiscordConfiguration
+{
+    Token = &quot;my.token.here&quot;,
+    TokenType = TokenType.Bot,
+    // yadda yadda
+    WebSocketClientFactory = WebSocket4NetClient.CreateNew
+};
+</code></pre><p>For WS4NetCore:</p>
+<pre><code class="lang-cs">var config = new DiscordConfiguration
+{
+    Token = &quot;my.token.here&quot;,
+    TokenType = TokenType.Bot,
+    // yadda yadda
+    WebSocketClientFactory = WebSocket4NetCoreClient.CreateNew
+};
+</code></pre><p>Similarly, for WS#:</p>
+<pre><code class="lang-cs">var config = new DiscordConfiguration
+{
+    Token = &quot;my.token.here&quot;,
+    TokenType = TokenType.Bot,
+    // yadda yadda
+    WebSocketClientFactory = WebSocketSharpClient.CreateNew
+};
+</code></pre><p>For any other implementation, make sure you have a class that inherits from <a class="xref" href="../../api/DSharpPlus.Net.WebSocket.BaseWebSocketClient.html">BaseWebSocketClient</a> class, 
+implements its abstract members, and has a public constructor which takes a <code>System.Net.IWebProxy</code> as an argument. Provide a factory 
+method which instantiates this implementation, and you&#39;re good to go.</p>
+<p>Lastly, don&#39;t forget to add <code>using DSharpPlus.Net.WebSocket;</code> at the top of your <code>.cs</code> file.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/uwx/DSharpPlus/blob/alias-test/docs/articles/getting_started/alternate_ws.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © 2017-2019 DSharpPlus development team
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

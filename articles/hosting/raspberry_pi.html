@@ -1,0 +1,276 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>I'm broke and all I have is a Pi. How do I host my bot? </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="I'm broke and all I have is a Pi. How do I host my bot? ">
+    <meta name="generator" content="docfx 2.40.12.0">
+    
+    <link rel="shortcut icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    <meta property="docfx:rel" content="../../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="im-broke-and-all-i-have-is-a-pi-how-do-i-host-my-bot">I&#39;m broke and all I have is a Pi. How do I host my bot?</h1>
+
+<p>Hosting a small bot doesn&#39;t require an almighty supercomputer. If performance is not a big concern for your bot, you 
+might want to consider buying a Raspberry Pi (or using one you already have). They are $35 ARM-based computers, which 
+should sport more than enough power to host a bot that doesn&#39;t interact with too many servers or people.</p>
+<p>Raspberry Pi comes in 4 versions:</p>
+<ul>
+<li><strong>Raspberry Pi 1</strong> comes in 4 variants: A, A+, B, and B+. They all feature a single-core 700MHz ARMv6z CPU, and 512MB 
+RAM (with the exception of A, which has only 256MB). The A models have a single USB 2.0 port and no Ethernet, the B model 
+has 2 USB 2.0 ports, and 10/100MBit Ethernet, B+ features 10/100 Ethernet and 4 USB 2.0 ports.</li>
+<li><strong>Raspberry Pi 2</strong> has a single variant: model B. It comes with a quad-core 900MHz ARMv7-A CPU, 1GB RAM, 10/100 Ethernet 
+port, and 4 USB 2.0 ports.</li>
+<li><strong>Raspberry Pi 3</strong>, like the 2, only has model B. Features quad-core 1.2GHz ARMv8-A 64-bit CPU (although the default OS is 
+32-bit), 1GB RAM, 10/100 Ethernet, 802.11n Wi-Fi, Bluetooth, and 4 USB 2.0 ports.</li>
+<li><strong>Raspberry Pi Zero</strong> is smaller than the other options, but at the cost of having a single-core 1GHz ARMv6Z CPU, 512MB 
+RAM, and a single Micro-USB 2.0 port. Later revisions also have 802.11n Wi-Fi and Bluetooth.</li>
+</ul>
+<p>There are also several clones of Raspberry Pi, some of which pack more computing power. There are 4 ways to run a bot on your 
+Pi. Depending on the board you have, your options might be limited.</p>
+<h2 id="method-1-use-a-prebuilt-net-core-docker-image">Method 1: Use a prebuilt .NET Core docker image</h2>
+<p>This method requires an ARMv7- or ARMv8-based board, with 32-bit OS.</p>
+<p>This method is probably the most recommended, as it already packages the .NET Core runtime into a Docker container with all 
+the necessary utilities required to host your bot. On top of that, it also takes care of properly isolating your bot from 
+the OS.</p>
+<ol>
+<li>Login to your Pi via SSH or serial connection.</li>
+<li>Execute <code>curl -sSL https://get.docker.com | sudo sh</code>. This will install Docker and all the required dependencies.</li>
+<li>Add your user to <code>docker</code> group (<code>sudo usermod -aG docker $USER</code>). This is optional, but if you don&#39;t do that, you will 
+need to execute all Docker commands with <code>sudo</code>. After you do this, you will need to disconnect (or logout) and connect 
+again.</li>
+<li>Go to <code>/tmp</code> (<code>cd /tmp</code>).</li>
+<li>Download the <a href="/rpi/armhf-netcore2.0.tar.xz" title=".NET Core 2.0 ARM image">prebuilt docker image</a> 
+(<code>curl -LO https://dsharpplus.emzi0767.com/rpi/armhf-netcore2.0.tar.xz</code>).</li>
+<li>Extract the .xz file (<code>xz -dvv armhf-netcore2.0.tar.xz</code>).</li>
+<li>Load the image (<code>cat armhf-netcore2.0.tar | docker load</code>).</li>
+<li>Remove the temporary file (<code>rm armhf-netcore2.0.tar</code>).</li>
+<li>Start a new container using the image (<code>docker run -dti --name=mybot armhf/netcore2.0</code>).</li>
+<li>Attach to the container (<code>docker attach mybot</code>).</li>
+</ol>
+<p>You will be dropped into a shell for the default user <code>dotnet</code>. The password is <code>netdot</code>, and <code>sudo</code> access is enabled. It is 
+advised you change the password by doing <code>passwd</code>. Once you do that, detach from the container (Ctrl+P, Ctrl+Q).</p>
+<p>You need to make your bot target .NET Core 2.0 (<code>netcoreapp2.0</code>), and publish it. To build and publish, you do the following (using 
+dotnet CLI):</p>
+<ol>
+<li>Clean your previous build (<code>dotnet clean -c Release</code>).</li>
+<li>Restore packages (<code>dotnet restore</code>).</li>
+<li>Build your project in Release configuration for .NET Core 2.0 (<code>dotnet build -c Release -f netcoreapp2.0</code>).</li>
+<li>Publish your project (<code>dotnet publish -c Release -f netcoreapp2.0</code>).</li>
+</ol>
+<p>Your build artifacts will be placed in <code>bin/Release/netcoreapp2.0/publish</code>. Package them and transfer them to your Pi. I recommend 
+packing as a <code>.tar</code> archive using a program like 7-Zip. Once on the Pi, you will need to copy your bot data to your Docker 
+container:</p>
+<ol>
+<li>Navigate to where you uploaded the archive.</li>
+<li>Copy the archive to the container (<code>docker cp mybot.tar mybot:/home/dotnet/tmp/mybot.tar</code>). You need to replace <code>mybot.tar</code> with 
+the actual archive name.</li>
+<li>Reattach to the container (<code>docker attach mybot</code>).</li>
+<li>Inside, navigate to <code>~/tmp</code> (<code>cd ~/tmp</code>).</li>
+<li>Extract and delete the archive (<code>tar xf mybot.tar &amp;&amp; rm mybot.tar</code>).</li>
+<li>Create a directory for your bot inside <code>~/apps</code> (<code>mkdir ~/apps/mybot</code>).</li>
+<li>Copy the bot files to the directory and delete the temporary files (<code>cp -rf * ~/apps/mybot &amp;&amp; rm -rf *</code>).</li>
+<li>Navigate to the bot&#39;s directory (<code>cd ~/apps/mybot</code>).</li>
+<li>Start your bot <code>dotnet MyBot.dll</code>.</li>
+</ol>
+<p>In the above, replace <code>mybot</code> with the name of your bot (without spaces), and <code>MyBot.dll</code> with your bot&#39;s entry DLL name. You 
+can now detach, your bot is running. Should you ever need to update your bot, just reattach to the container, stop the bot using 
+Ctrl+C, then repeat the above steps.</p>
+<h2 id="method-2-install-net-core-20-runtime-manually">Method 2: Install .NET Core 2.0 runtime manually</h2>
+<p>This method has the same requirements as the first method (ARMv7 or ARMv8 CPU, with 32-bit OS).</p>
+<p>This method will install a shared .NET Core 2.0 runtime on your device. This is particularly useful if you intend to run more 
+than one .NET Core application on the device. To install the runtime, do the following:</p>
+<ol>
+<li>Login to your Pi via SSH or serial connection.</li>
+<li>Install necessary prerequisites (<code>sudo apt-get install curl libunwind8 gettext</code>).</li>
+<li>Go to <code>/tmp</code> (<code>cd /tmp</code>).</li>
+<li>Download <a href="https://dotnetcli.blob.core.windows.net/dotnet/Runtime/release/2.0.0/dotnet-runtime-latest-linux-arm.tar.gz" title=".NET Core 2.0 ARM runtime">.NET Core 2.0 ARM runtime</a> 
+(<code>curl -LO https://dotnetcli.blob.core.windows.net/dotnet/Runtime/release/2.0.0/dotnet-runtime-latest-linux-arm.tar.gz</code>).</li>
+<li>Create a directory called <code>dotnet</code> in <code>/opt</code> (<code>sudo mkdir /opt/dotnet</code>).</li>
+<li>Extract the runtime to the directory (<code>sudo tar xzf dotnet-runtime-latest-linux-arm.tar.gz -C /opt/dotnet</code>).</li>
+<li>Create a softlink for the <code>dotnet</code> binary in <code>/usr/local/bin</code> (<code>sudo ln -s /opt/dotnet/dotnet /usr/local/bin/dotnet</code>).</li>
+<li>Clean up (<code>rm dotnet-runtime-latest-linux-arm.tar.gz</code>).</li>
+<li>Verify that the installation was successful (<code>dotnet --info</code>).</li>
+</ol>
+<p>If you were successful, you should see something to this effect:</p>
+<pre><code>pi@raspberry:/tmp $ dotnet --info
+
+Microsoft .NET Core Shared Framework Host
+
+  Version  : 2.0.0
+  Build    : e8b8861ac7faf042c87a5c2f9f2d04c98b69f28d
+</code></pre><p>You need to make your bot target .NET Core 2.0 (<code>netcoreapp2.0</code>), and publish it. To build and publish, you do the following (using 
+dotnet CLI):</p>
+<ol>
+<li>Clean your previous build (<code>dotnet clean -c Release</code>).</li>
+<li>Restore packages (<code>dotnet restore</code>).</li>
+<li>Build your project in Release configuration for .NET Core 2.0 (<code>dotnet build -c Release -f netcoreapp2.0</code>).</li>
+<li>Publish your project (<code>dotnet publish -c Release -f netcoreapp2.0</code>).</li>
+</ol>
+<p>Your build artifacts will be placed in <code>bin/Release/netcoreapp2.0/publish</code>. Package them and transfer them to your Pi. From there, 
+unpack, and run by doing <code>dotnet Project.Name.dll</code>. For example, if your project is named MyBot, then the command will be 
+<code>dotnet MyBot.dll</code>.</p>
+<h3 id="what-if-the-version-is-not-200">What if the version is not <code>2.0.0</code>?</h3>
+<p>If the reported .NET Core runtime version is different from <code>2.0.0</code>, but for example <code>2.0.1</code>, you will need to tweak your csproj file 
+and build environment a bit.</p>
+<ol>
+<li>Add the following feed to your NuGet sources: <code>https://dotnet.myget.org/F/dotnet-core/api/v3/index.json</code>. This is the .NET Core 
+MyGet feed.</li>
+<li><p>Open your .csproj file, and inside the root (<code>&lt;Project&gt;</code>) element, create the following element:</p>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+  &lt;RuntimeFrameworkVersion&gt;2.0.1&lt;/RuntimeFrameworkVersion&gt;
+&lt;/PropertyGroup&gt;
+</code></pre><p>Of course, replace <code>2.0.1</code> with the actual version reported by <code>dotnet --info</code>.</p>
+</li>
+</ol>
+<h2 id="method-3-package-your-bot-as-self-contained-app">Method 3: Package your bot as self-contained app</h2>
+<p>This method has the same requirements as the first method (ARMv7 or ARMv8 CPU, with 32-bit OS).</p>
+<p>This method will cause your application to package a copy of the runtime with your application. This approach is good for situations 
+where you don&#39;t want to (or can&#39;t) install the runtime on the target or don&#39;t intend to run multiple .NET Core applications. It&#39;s not 
+suitable for multiple application scenarios, however, as this grows applications size by a large margin.</p>
+<p>You need to make your bot target .NET Core 2.0 (<code>netcoreapp2.0</code>), and publish it for ARM Linux runtime. To build and publish, you do the 
+following (using dotnet CLI):</p>
+<ol>
+<li>Clean your previous build (<code>dotnet clean -c Release</code>).</li>
+<li>Restore packages (<code>dotnet restore</code>).</li>
+<li>Build your project in Release configuration for .NET Core 2.0 (<code>dotnet build -c Release -f netcoreapp2.0</code>).</li>
+<li>Publish your project (<code>dotnet publish -c Release -f netcoreapp2.0 -r linux-arm</code>).</li>
+</ol>
+<p>Your build artifacts will be placed in <code>bin/Release/netcoreapp2.0/linux-arm/publish</code>. Package them and transfer them to your Pi. Before 
+you can run it, you will need to make a binary called <code>Your.Project</code> executable. For example, if your project is named MyBot, you will need 
+to <code>chmod +x MyBot</code>.</p>
+<p>After all is done, you can run your bot by doing <code>./Your.Project</code> from the directory it&#39;s in. Of course, replace <code>Your.Project</code> with the 
+actual binary name.</p>
+<h2 id="method-4-run-your-bot-using-mono">Method 4: Run your bot using Mono</h2>
+<p>This method can be utilized for all board flavours (ARMv6-, ARMv7, and ARMv8-based), no matter the OS bitness (32- and 64-bit <em>should</em> work).</p>
+<p>Since Mono neither is .NET Core, nor implements its APIs, this method will only work if you target .NETFX (.NET Framework 4.5, 4.6, or 4.7). 
+Mono runtime has several caveats. It&#39;s notorious for being buggy, so this might not always work.</p>
+<p>Using your package manager, install Mono runtime (Debian/Raspbian: <code>sudo apt-get install mono-complete</code>). Once that is done, you will need to 
+follow the <a href="/articles/getting_started/mono.html" title="Mono instructions and notes">Mono instructions</a> to complete the project setup.</p>
+<p>Once all is done, build your project, and transfer the artifacts to the Pi. Assuming your artifacts are in <code>~/mybot</code> and the executable is 
+called <code>MyBot.exe</code>, you can run your bot by navigating to the directory (<code>cd ~/mybot</code>) and executing the executable with Mono (<code>mono MyBot.exe</code>).</p>
+<h2 id="final-remarks">Final remarks</h2>
+<p>Do note that in order to keep the bot running after you disconnect, you will need a terminal multiplexer, such as <code>tmux</code> or <code>screen</code>. On top 
+of that, you will need a way of ensuring the application is restarted after it crashes. Do note that if you run inside a docker container, the 
+multiplexer is not necessary, albeit recommended.</p>
+<p>The latter can be done via a simple bash script, or using a system process manager integrated into your distribution or init system. The latter 
+is a proper approach, however it&#39;s not trivial.</p>
+<p>Simplest bash script that can autorestart your bot (while giving you a chance to shut it down completely) will look similarly to this:</p>
+<pre><code class="lang-bash">#!/bin/bash
+
+echo Using `which dotnet`
+while true
+do
+    dotnet &quot;$1&quot;
+    echo &quot;Application crashed, restarting in 5 seconds...&quot;
+    sleep 5
+done
+</code></pre><p>Save as <code>autorestart.sh</code>, make executable via <code>chmod +x autorestart.sh</code>, then run like <code>./autorestart.sh Your.Project.dll</code>, where <code>Your.Project.dll</code> 
+is your bot&#39;s entry DLL. If you published for specific platform, just replace <code>dotnet &quot;$1&quot;</code> with <code>&quot;./$1&quot;</code>. For mono, just do <code>mono &quot;$1&quot;</code>.</p>
+<p>And finally, it&#39;s recommended you run your bot in something like Docker. This can improve security, and you would be able to restrict the resources 
+the bot is using to operate.</p>
+<p>And <strong><em>never</em></strong> run your bot as <code>root</code>.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/uwx/DSharpPlus/blob/alias-test/docs/articles/hosting/raspberry_pi.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © 2017-2019 DSharpPlus development team
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

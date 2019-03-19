@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>My body bot is ready, but I can't keep my PC running 24/7! </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="My body bot is ready, but I can't keep my PC running 24/7! ">
+    <meta name="generator" content="docfx 2.40.12.0">
+    
+    <link rel="shortcut icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    <meta property="docfx:rel" content="../../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="my-body-bot-is-ready-but-i-cant-keep-my-pc-running-247">My <del>body</del> bot is ready, but I can&#39;t keep my PC running 24/7!</h1>
+
+<p>Typically, hosting a bot means it needs to run 24 hours a day, 7 days a week. While running your computer like that is 
+an option, it&#39;s generally better to deploy your bot on a machine that can run 24/7.</p>
+<p>There are 2 (although really 3) options for that. Unfortunately, none of them is free (or at least not permanently).</p>
+<h2 id="purchasing-a-vps-or-a-dedicated-server">Purchasing a VPS or a dedicated server</h2>
+<p>The simplest, and probably most hassle-free (and maybe cheapest in the long run) option is to find a provider that will 
+lend you their machine or a virtual host so you can run your bot in there.</p>
+<p>Generally, cheapest hosting options are all GNU/Linux-based, so it&#39;s highly recommended you familiarize yourself with the
+OS and its environment, particularly the shell (command line), and concepts such as SSH.</p>
+<p>There are several well-known, trusted, and cheap providers:</p>
+<ul>
+<li><a href="https://www.scaleway.com/" title="Scaleway"><strong>Scaleway</strong></a>: Cheap, and powerful. Scalway is based in Europe, and has locations 
+in France and Netherlands. They offer x64 and ARM machines and VPSes.</li>
+<li><a href="https://www.digitalocean.com/" title="DigitalOcean"><strong>DigitalOcean</strong></a>: Considered the gold standard. DigitalOcean is based in 
+the US. Their offer ranges from standard to more specialized deployments.</li>
+<li><a href="https://www.ovh.com/us/" title="OVH"><strong>OVH</strong></a>: Based in EU and US. OVH is cheap, and used by many people. Their offer includes 
+free DDoS protection.</li>
+</ul>
+<p>In addition to these, there are several hosting providers that offer free trials or in-service credit:</p>
+<ul>
+<li><a href="https://azure.microsoft.com/en-us/free/?cdn=disable" title="Microsoft Azure"><strong>Microsoft Azure</strong></a>: $200 in-service credit, 
+to be used within month of registration. Requires credit or debit card for validation. Azure isn&#39;t cheap, but it supports 
+both Windows and GNU/Linux-based servers. If you&#39;re enrolled in Microsoft Imagine, it&#39;s possible to get these cheaper or 
+free.</li>
+<li><a href="https://aws.amazon.com/free/" title="AWS"><strong>Amazon Web Services</strong></a>: Free for 12 months (with 750 compute hours per month). Not 
+cheap once the trial runs out, but it&#39;s also considered industry standard in cloud services.</li>
+<li><a href="https://cloud.google.com/free/" title="Google Cloud Platform"><strong>Google Cloud Platform</strong></a>: $300 in-service credit, to be used 
+within year of registration. GCP is based in the US, and offers very scalable products. Like the above, it&#39;s not the 
+cheapest of offerings.</li>
+</ul>
+<h2 id="i-want-to-host-at-home">I want to host at home</h2>
+<p>Perhaps you own a dedicated server machine, or you just have a computer that you can leave running 24/7. If your residential 
+connection is decent enough, you could try hosting your bot at home. This has the advantage of giving you full access to 
+hardware your code runs on, and only costs you as much as your electricity and internet bill. You will also need to take care 
+to secure your bot against outages.</p>
+<p>You need to make sure you have all the latest updates and patches along with all the necessary software installed. It&#39;s generally 
+recommended your hosting machine has at least 2 CPU cores, and a decent amount of RAM.</p>
+<h3 id="i-have-a-pi-cant-that-be-used">I have a Pi, can&#39;t that be used?</h3>
+<p>We have a <a href="/articles/hosting/raspberry_pi.html" title="Hosting on a Rasbperry Pi">special guide</a> for Raspberry Pi.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/uwx/DSharpPlus/blob/alias-test/docs/articles/hosting/options.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © 2017-2019 DSharpPlus development team
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

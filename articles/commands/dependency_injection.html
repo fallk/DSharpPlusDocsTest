@@ -1,0 +1,169 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Dependency injection - passing data around </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Dependency injection - passing data around ">
+    <meta name="generator" content="docfx 2.40.12.0">
+    
+    <link rel="shortcut icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    <meta property="docfx:rel" content="../../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="dependency-injection---passing-data-around">Dependency injection - passing data around</h1>
+
+<p>In a situation where you need to pass objects in and out of your command modules, you need a way to access that data. 
+Dependency injection provides a convenient and safe (not to mention the only correct) way of passing data to your 
+modules. </p>
+<p>You use dependency injection by first creating a service provider, then supplying it to your <a class="xref" href="../../api/DSharpPlus.CommandsNext.CommandsNextConfiguration.html">CommandsNextConfiguration</a> 
+instance via <a class="xref" href="../../api/DSharpPlus.CommandsNext.CommandsNextConfiguration.html#DSharpPlus_CommandsNext_CommandsNextConfiguration_Services">Services</a> property. The objects you placed in the 
+service provider will then be injected into your modules when they are instantiated. During injection, CommandsNext 
+first injects objects via constructor (i.e. it will try to match any constructor parameter to service types in the 
+provider. If it fails, it will throw. Up next, any public writable properties are populated with services from the 
+provider. If a suitable service is not found, the property is not injected. The process is then repeated for public 
+writable fields. To prevent specific properties or fields from being injected, you can put the <a class="xref" href="../../api/DSharpPlus.CommandsNext.Attributes.DontInjectAttribute.html">DontInjectAttribute</a> 
+over them.</p>
+<p>This is useful in a scenario when you have any kind of data that you need to be persistent or accessible from command 
+modules, such as settings classes, entity framework database contexts, and so on.</p>
+<h2 id="1-creating-a-service-provider">1. Creating a service provider</h2>
+<p>If you go back to the basic CommandsNext example, you will remember the <code>random</code> command. Let&#39;s amend it, and make 
+use of shared <code>Random</code> instance (note that reusing <code>Random</code> instances is generally not a good idea; here it&#39;s done for 
+the sake of the example).</p>
+<p>Before you enable your CommandsNext module, you will need to create a new <code>ServiceCollection</code> instance, then add a 
+singleton <code>Random</code> instance to it, and finally, build a service provider out of it. You can do it like so:</p>
+<pre><code class="lang-cs">var deps = new ServiceCollection()
+    .AddSingleton(new Random())
+    .BuildServiceProvider();
+</code></pre><p>Don&#39;t forget to add <code>using Microsoft.Extensions.DependencyInjection;</code> to your usings.</p>
+<p>You then need to pass the resulting provider to your CommandsNext configuration. Amend it like so:</p>
+<pre><code class="lang-cs">commands = discord.UseCommandsNext(new CommandsNextConfiguration
+{
+    StringPrefix = &quot;;;&quot;,
+    Services = deps
+});
+</code></pre><h2 id="2-amending-the-command-module">2. Amending the command module</h2>
+<p>Go to your command module, and give it a read-only property called Rng, of type Random:</p>
+<pre><code class="lang-cs">public Random Rng { get; }
+</code></pre><p>Now create a constructor for the module, which takes an instance of Random as an argument:</p>
+<pre><code class="lang-cs">public MyCommands(Random rng)
+{
+    Rng = rng;
+}
+</code></pre><p>And finally edit the <code>Random</code> command to look like this:</p>
+<pre><code class="lang-cs">[Command(&quot;random&quot;)]
+public async Task Random(CommandContext ctx, int min, int max)
+{
+    await ctx.RespondAsync($&quot;🎲 Your random number is: {Rng.Next(min, max)}&quot;);
+}
+</code></pre><p>When you invoke <code>;;random 1 10</code> now, it will use the shared <code>Random</code> instance.</p>
+<h2 id="3-further-notes">3. Further notes</h2>
+<p>While the service collection can hold singletons, it can hold transient and scoped instances as well. The difference is 
+that singleton instances are instantantiated once (when added to the collection), scoped are instantiated once per 
+module instantiation, and transients are instantiated every time they are requested.</p>
+<p>Combined with transient module lifespans, injecting an entity framework database context as a transient or scoped 
+service makes working with databases easier, as an example.</p>
+<p>Note that if a module has singleton lifespan, all services will be injected to it once. Only transient modules take 
+advantage of scoped and transient services.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/uwx/DSharpPlus/blob/alias-test/docs/articles/commands/dependency_injection.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © 2017-2019 DSharpPlus development team
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

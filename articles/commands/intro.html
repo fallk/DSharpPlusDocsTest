@@ -1,0 +1,272 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Talking with the bot - adding commands for enhanced user interaction </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Talking with the bot - adding commands for enhanced user interaction ">
+    <meta name="generator" content="docfx 2.40.12.0">
+    
+    <link rel="shortcut icon" href="../../favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    <meta property="docfx:rel" content="../../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items"></div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="talking-with-the-bot---adding-commands-for-enhanced-user-interaction">Talking with the bot - adding commands for enhanced user interaction</h1>
+
+<p>You now have a basic bot. In order to allow users to interact with it easily, you will want to add some commands to it. 
+This is done using the CommandsNext module, which will not only handle, registering and executing commands for you, but 
+it will also make grabbing additional data for your commands easy.</p>
+<h2 id="1-before-we-continue">1. Before we continue</h2>
+<p>Right now, your bot is console-mute. Let&#39;s change it. Let&#39;s make it output all information about its state and doings.</p>
+<p>To do that, add the following options to your <code>DiscordConfiguration</code>:</p>
+<pre><code class="lang-cs">UseInternalLogHandler = true,
+LogLevel = LogLevel.Debug
+</code></pre><h2 id="2-installing-commandsnext">2. Installing CommandsNext</h2>
+<p>Using the procedures in the previous article, install a NuGet package called <code>DSharpPlus.CommandsNext</code>.</p>
+<p>Now you need to enable CommandsNext extension on your DiscordClient. Add a new field to your bot&#39;s <code>Program</code> class: 
+<code>static CommandsNextExtension commands;</code></p>
+<p>Visual Studio will complain, you also need to add <code>using DSharpPlus.CommandsNext;</code> to your usings.</p>
+<p>Before you connect, enable the module on your client:</p>
+<pre><code class="lang-cs">commands = discord.UseCommandsNext(new CommandsNextConfiguration
+{
+    StringPrefix = &quot;;;&quot;
+});
+</code></pre><p>This will enable the module, and use <code>;;</code> as the command prefix for your bot.</p>
+<h2 id="3-creating-a-command-module">3. Creating a command module</h2>
+<p>First, you need to create a new class to hold your commands. In this example, we&#39;ll call it <code>MyCommands</code>.</p>
+<p>Once it&#39;s created, you should be presented with a file that looks like this:</p>
+<pre><code class="lang-cs">using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace MyFirstBot
+{
+    class MyCommands
+    {
+    }
+}
+</code></pre><p>Add a <code>public</code> modifier to the class. That class will now serve as your command module.</p>
+<p>Before you can proceed, add <code>using System.Threading.Tasks;</code>, <code>using DSharpPlus;</code>, 
+<code>using DSharpPlus.CommandsNext;</code>, and <code>using DSharpPlus.CommandsNext.Attributes;</code> to the using section.</p>
+<p>Go back to your main bot class, and below the command module initialisation, add the following:</p>
+<pre><code class="lang-cs">commands.RegisterCommands&lt;MyCommands&gt;();
+</code></pre><p>This will enable all the commands in your command module.</p>
+<p>The class should now look like this:</p>
+<pre><code class="lang-cs">using System;
+using System.Threading.Tasks;
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+
+namespace MyFirstBot
+{
+    class Program
+    {
+        static DiscordClient discord;
+        static CommandsNextExtension commands;
+
+        static void Main(string[] args)
+        {
+            MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+
+        static async Task MainAsync(string[] args)
+        {
+            discord = new DiscordClient(new DiscordConfiguration
+            {
+                Token = &quot;&lt;your token here&gt;&quot;,
+                TokenType = TokenType.Bot,
+                UseInternalLogHandler = true,
+                LogLevel = LogLevel.Debug
+            });
+
+            discord.MessageCreated += async e =&gt;
+            {
+                if (e.Message.Content.ToLower().StartsWith(&quot;ping&quot;))
+                    await e.Message.RespondAsync(&quot;pong!&quot;);
+            };
+
+            commands = discord.UseCommandsNext(new CommandsNextConfiguration
+            {
+                StringPrefix = &quot;;;&quot;
+            });
+
+            commands.RegisterCommands&lt;MyCommands&gt;();
+
+            await discord.ConnectAsync();
+            await Task.Delay(-1);
+        }
+    }
+}
+</code></pre><h2 id="4-creating-your-first-command">4. Creating your first command</h2>
+<p>So now that you have your module, you want to add some commands to it. Let&#39;s add a first one. </p>
+<p>But before you do, let&#39;s explain a couple concepts. </p>
+<p>What are commands? How do they work? How do I make the library recognize something as a command?</p>
+<p>Commands are basically methods with specific signatures. All commands must be public instance methods, that return a <code>Task</code>. 
+They also need to take <code>CommandContext</code> as first argument. </p>
+<p>Commands work by invoking the method which is tied to the command when any users sends a message that consists of a prefix, 
+command name, and its arguments, for example: <code>!hi</code>.</p>
+<p>Commands are marked with a special attribute. When you register commands, the library looks for methods with that attribute 
+and marks these methods as commands.</p>
+<p>Armed with that knowledge, let&#39;s create your first command, a simple &quot;hi, user!&quot;.</p>
+<p>In the class, create a public async method, that returns a Task, and call it Hi. Make CommandContext its first argument. It 
+should look like this:</p>
+<pre><code class="lang-cs">public async Task Hi(CommandContext ctx)
+{
+
+}
+</code></pre><p>Now, put the following code inside that method: <code>await ctx.RespondAsync($&quot;👋 Hi, {ctx.User.Mention}!&quot;);</code></p>
+<p>You&#39;re not ready yet. Above the method, put the Command attribute. It should look like this: <code>[Command(&quot;hi&quot;)]</code></p>
+<p>Put together, the class should now look like this:</p>
+<pre><code class="lang-cs">using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+
+namespace MyFirstBot
+{
+    public class MyCommands
+    {
+        [Command(&quot;hi&quot;)]
+        public async Task Hi(CommandContext ctx)
+        {
+            await ctx.RespondAsync($&quot;👋 Hi, {ctx.User.Mention}!&quot;);
+        }
+    }
+}
+</code></pre><p>What this command will do is posting a message that contains the <span class="emoji" shortcode="wave">👋</span> emoji, and says Hi, followed by a mention of the 
+user who invoked the command.</p>
+<p>Once this is all done, hit F5, and notice that console will light up with notifications. Go to Discord, and type <code>;;hi</code>. 
+Your bot should now respond. If it did, congratulations!</p>
+<p><img src="/images/03_01_hi.png" alt="Step 1"></p>
+<h2 id="5-using-arguments">5. Using arguments</h2>
+<p>Close your bot, sit down, and listed to me.</p>
+<p>CommandsNext is capable of automatically converting user-supplied data to a variety of types. The default argument converters 
+can convert to the following:</p>
+<ul>
+<li>Integral types: <code>byte</code>, <code>sbyte</code>, <code>ushort</code>, <code>short</code>, <code>uint</code>, <code>int</code>, <code>ulong</code>, <code>long</code></li>
+<li>Floating-point types: <code>float</code>, <code>double</code>, <code>decimal</code></li>
+<li>Text and character types: <code>string</code>, <code>char</code></li>
+<li>Boolean types: <code>bool</code></li>
+<li>Date and time types: <code>DateTime</code>, <code>DateTimeOffset</code>, <code>TimeSpan</code></li>
+<li>Discord entities: <code>DiscordGuild</code>, <code>DiscordChannel</code>, <code>DiscordMember</code>, <code>DiscordUser</code>, <code>DiscordRole</code>, <code>DiscordMessage</code>, <code>DiscordEmoji</code>, <code>DiscordColor</code></li>
+</ul>
+<p>Using these is as simple as declaring additional arguments for your command function. Let&#39;s say you want to create a command 
+that generates a random number between the two specified numbers. You can do it by adding two <code>int</code> arguments to your function.</p>
+<p>For example:</p>
+<pre><code class="lang-cs">[Command(&quot;random&quot;)]
+public async Task Random(CommandContext ctx, int min, int max)
+{
+    var rnd = new Random();
+    await ctx.RespondAsync($&quot;🎲 Your random number is: {rnd.Next(min, max)}&quot;);
+}
+</code></pre><p>Now, if you hit F5, and go to your server, you can call <code>;;random 0 10</code>, and it will respond with a random number between 0 
+and 10 exclusive.</p>
+<p><img src="/images/03_02_random.png" alt="Step 2"></p>
+<h2 id="6-advanced-subjects">6. Advanced subjects</h2>
+<p>Commands are covered more in-depth in <a href="https://github.com/Emzi0767/DSharpPlus-Example-Bot/tree/master/DSPlus.Examples.CSharp.Ex02" title="Example Bot #2">Emzi0767&#39;s Example bot #2</a>. 
+If you want to check out all the cool things CommandsNext can do to make your life easier, make sure to check it out.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/uwx/DSharpPlus/blob/alias-test/docs/articles/commands/intro.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            © 2017-2019 DSharpPlus development team
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>
