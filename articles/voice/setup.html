@@ -105,12 +105,7 @@ project, then copy the result to the target.</p>
 opus and sodium natives for Windows available for download <a href="/natives/index.html">here</a>.</p>
 <p>If you&#39;re in doubt about which libraries to use, follow this flowchart:</p>
 <p><img src="/images/05_05_natives_flowchart.png" alt="Natives flowchart" title="Natives - flowchart"></p>
-<p>To install those, just extract the .dll files from the inside to the directory where your output executable is. If debugging, 
-it&#39;s going to be one of these:</p>
-<ul>
-<li><strong>.NETFX</strong>: <code>&lt;project root&gt;\bin\Debug\</code></li>
-<li><strong>.NET Core</strong>: <code>&lt;project root&gt;</code></li>
-</ul>
+<p>To install those, just add them to your project. Then change their properties so that they are always copied on build.</p>
 <p>Do note that when debugging, you will usually need 32-bit natives, regardless of OS architecture.</p>
 <h3 id="gnulinux-1">GNU/Linux</h3>
 <p>You will need to install <code>libopus</code> and <code>libsodium</code> from your distro repositories. Depending on your distribution, the package 
@@ -178,7 +173,7 @@ caused to your system.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/uwx/DSharpPlus/blob/alias-test/docs/articles/voice/setup.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/uwx/DSharpPlus/blob/patch-104/docs/articles/voice/setup.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>
