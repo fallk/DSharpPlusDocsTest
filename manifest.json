@@ -4417,12 +4417,15 @@
       "version": ""
     },
     {
+      "log_codes": [
+        "InvalidFileLink"
+      ],
       "type": "Conceptual",
       "source_relative_path": "index.md",
       "output": {
         ".html": {
           "relative_path": "index.html",
-          "hash": "pXwuxb0nVQMG6aGsVe9ySw=="
+          "hash": "w0fxd83A9A9f3NeT+iQp+A=="
         }
       },
       "is_incremental": false,
@@ -4469,17 +4472,17 @@
           "total_file_count": 0,
           "skipped_file_count": 0
         },
-        "ConceptualDocumentProcessor": {
-          "can_incremental": true,
-          "incrementalPhase": "build",
-          "total_file_count": 28,
-          "skipped_file_count": 28
-        },
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": true,
           "incrementalPhase": "build",
           "total_file_count": 317,
           "skipped_file_count": 317
+        },
+        "ConceptualDocumentProcessor": {
+          "can_incremental": true,
+          "incrementalPhase": "build",
+          "total_file_count": 28,
+          "skipped_file_count": 27
         },
         "ResourceDocumentProcessor": {
           "can_incremental": false,
